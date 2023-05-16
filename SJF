@@ -1,3 +1,82 @@
+/*
+BEGIN
+DECLARE processes[], n, i
+READ n from user
+
+
+
+FOR i = 0 to n-1
+    READ processes[i].arrivalTime from user
+    READ processes[i].burstTime from user
+    processes[i].id = i + 1
+
+calculateTimes(processes)
+
+DECLARE n, currentTime, i, j, shortestJobIndex
+SET n = processes.size()
+SET currentTime = 0
+
+SORT processes based on arrivalTime
+
+FOR i = 0 to n-1
+    IF currentTime < processes[i].arrivalTime
+        SET currentTime = processes[i].arrivalTime
+    
+    SET shortestJobIndex = i
+    FOR j = i + 1 to n-1
+        IF processes[j].arrivalTime <= currentTime AND processes[j].burstTime < processes[shortestJobIndex].burstTime
+            SET shortestJobIndex = j
+    
+    SWAP processes[i] and processes[shortestJobIndex]
+
+    SET processes[i].startTime = currentTime
+    SET processes[i].completionTime = currentTime + processes[i].burstTime
+    SET processes[i].turnaroundTime = processes[i].completionTime - processes[i].arrivalTime
+    SET processes[i].waitingTime = processes[i].turnaroundTime - processes[i].burstTime
+
+    SET currentTime = processes[i].completionTime
+END FUNCTION
+
+
+DECLARE avgTurnaroundTime, totalTime, throughput
+SET totalTime = processes[n - 1].completionTime - processes[0].arrivalTime
+SET avgTurnaroundTime = calculateAverageTurnaroundTime(processes)
+SET throughput = calculateThroughput(processes, totalTime)
+
+PRINT "Process\tArrival Time\tBurst Time\tStart Time\tCompletion Time\tWaiting Time\tTurnaround Time"
+FOR i = 0 to n-1
+    PRINT processes[i].id + "\t" + processes[i].arrivalTime + "\t\t"
+        + processes[i].burstTime + "\t\t" + processes[i].startTime + "\t\t"
+        + processes[i].completionTime + "\t\t" + processes[i].waitingTime + "\t\t"
+        + processes[i].turnaroundTime
+
+PRINT "Average Turnaround Time: " + avgTurnaroundTime
+PRINT "Throughput: " + throughput
+
+END
+
+
+
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
