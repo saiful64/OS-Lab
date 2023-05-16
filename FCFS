@@ -1,3 +1,40 @@
+/*
+
+BEGIN
+DECLARE processes[], burst_time[], waiting_time[], turnaround_time[], n, i, currentTime
+READ n from user
+FOR i = 0 to n-1
+    READ burst_time[i] from user
+    processes[i].id = i + 1
+    processes[i].arrivalTime = 0
+
+SORT processes[] based on arrivalTime
+
+currentTime = 0
+
+FOR i = 0 to n-1
+    IF currentTime < processes[i].arrivalTime
+        currentTime = processes[i].arrivalTime
+    
+    processes[i].startTime = currentTime
+    processes[i].completionTime = currentTime + burst_time[i]
+    processes[i].turnaroundTime = processes[i].completionTime - processes[i].arrivalTime
+    processes[i].waitingTime = processes[i].turnaroundTime - burst_time[i]
+    
+    currentTime = processes[i].completionTime
+
+PRINT "ID\tArrival Time\tBurst Time\tStart Time\tCompletion Time\tWaiting Time\tTurnaround Time"
+FOR i = 0 to n-1
+    PRINT processes[i].id + "\t" + processes[i].arrivalTime + "\t\t" + burst_time[i] + "\t\t" + processes[i].startTime + "\t\t" + processes[i].completionTime + "\t\t" + processes[i].waitingTime + "\t\t" + processes[i].turnaroundTime
+
+END
+
+
+
+*/
+
+
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
