@@ -1,17 +1,4 @@
 
-None selected
-
-Skip to content
-Using Gmail with screen readers
-
-You could lose access to your 11 years of Gmail history
-Adding a recovery phone and email can help you sign in and keep your account secure
-Add recovery infoDismiss
-Conversations
-0.38 GB of 15 GB used
-Terms · Privacy · Program Policies
-Last account activity: 5 hours ago
-Details
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -121,5 +108,3 @@ std::cout << "Average Turnaround Time: " << averageTurnaroundTime / n << std::en
 
 return 0;
 }
-priority_aging.cpp
-Displaying priority_aging.cpp.
