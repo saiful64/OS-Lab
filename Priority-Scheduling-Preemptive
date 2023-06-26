@@ -1,0 +1,93 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+struct Process {
+    int pid;        // Process ID
+    int bt;         // CPU Burst time required
+    int priority;   // Priority of this process
+};
+
+// Sorting the Process according to the priority
+bool compare(Process a, Process b) {
+    return (a.priority > b.priority);
+}
+
+void waitingTime(vector<Process>& pro, vector<int>& wt) {
+    // Initial waiting time for a process is 0
+    wt[0] = 0;
+
+    // Calculating waiting time
+    for (int i = 1; i < pro.size(); i++)
+        wt[i] = pro[i - 1].bt + wt[i - 1];
+}
+
+// Function to calculate turnaround time
+void turnarround(vector<Process>& pro, vector<int>& wt, vector<int>& tat) {
+    // Calculating turnaround time by adding bt[i] + wt[i]
+    for (int i = 0; i < pro.size(); i++)
+        tat[i] = pro[i].bt + wt[i];
+}
+
+// Function to calculate average time
+void avgTime(vector<Process>& pro) {
+    vector<int> wt(pro.size(), 0);
+    vector<int> tat(pro.size(), 0);
+    int total_wt = 0;
+    int total_tat = 0;
+
+    // Function to find waiting time of all processes
+    waitingTime(pro, wt);
+
+    // Function to find turnaround time for all processes
+    turnarround(pro, wt, tat);
+
+    // Display processes along with all details
+    cout << "\nProcesses " << " Burst time " << " Waiting time " << " Turnaround time\n";
+
+    // Calculate total waiting time and total turnaround time
+    for (int i = 0; i < pro.size(); i++) {
+        total_wt += wt[i];
+        total_tat += tat[i];
+        cout << " " << pro[i].pid << "\t\t" << pro[i].bt << "\t " << wt[i] << "\t\t " << tat[i] << endl;
+    }
+
+    cout << "\nAverage waiting time = " << static_cast<float>(total_wt) / pro.size();
+    cout << "\nAverage turnaround time = " << static_cast<float>(total_tat) / pro.size();
+}
+
+void scheduling(vector<Process>& pro) {
+    // Sort processes by priority
+    sort(pro.begin(), pro.end(), compare);
+
+    cout << "Order in which processes get executed: ";
+    for (int i = 0; i < pro.size(); i++)
+        cout << pro[i].pid << " ";
+
+    avgTime(pro);
+}
+
+int main() {
+    int n;
+    cout << "Enter the number of processes: ";
+    cin >> n;
+
+    vector<Process> pro(n);
+
+    cout << "Enter the details for each process:\n";
+    for (int i = 0; i < n; i++) {
+        cout << "Process " << i + 1 << ":\n";
+        cout << "Process ID: ";
+        cin >> pro[i].pid;
+        cout << "Burst Time: ";
+        cin >> pro[i].bt;
+        cout << "Priority: ";
+        cin >> pro[i].priority;
+    }
+
+    scheduling(pro);
+
+    return 0;
+}
