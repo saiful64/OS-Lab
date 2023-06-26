@@ -1,180 +1,97 @@
-/*
-BEGIN
-DECLARE processes[], n, i
-READ n from user
-
-
-
-FOR i = 0 to n-1
-    READ processes[i].arrivalTime from user
-    READ processes[i].burstTime from user
-    processes[i].id = i + 1
-
-calculateTimes(processes)
-
-DECLARE n, currentTime, i, j, shortestJobIndex
-SET n = processes.size()
-SET currentTime = 0
-
-SORT processes based on arrivalTime
-
-FOR i = 0 to n-1
-    IF currentTime < processes[i].arrivalTime
-        SET currentTime = processes[i].arrivalTime
-    
-    SET shortestJobIndex = i
-    FOR j = i + 1 to n-1
-        IF processes[j].arrivalTime <= currentTime AND processes[j].burstTime < processes[shortestJobIndex].burstTime
-            SET shortestJobIndex = j
-    
-    SWAP processes[i] and processes[shortestJobIndex]
-
-    SET processes[i].startTime = currentTime
-    SET processes[i].completionTime = currentTime + processes[i].burstTime
-    SET processes[i].turnaroundTime = processes[i].completionTime - processes[i].arrivalTime
-    SET processes[i].waitingTime = processes[i].turnaroundTime - processes[i].burstTime
-
-    SET currentTime = processes[i].completionTime
-END FUNCTION
-
-
-DECLARE avgTurnaroundTime, totalTime, throughput
-SET totalTime = processes[n - 1].completionTime - processes[0].arrivalTime
-SET avgTurnaroundTime = calculateAverageTurnaroundTime(processes)
-SET throughput = calculateThroughput(processes, totalTime)
-
-PRINT "Process\tArrival Time\tBurst Time\tStart Time\tCompletion Time\tWaiting Time\tTurnaround Time"
-FOR i = 0 to n-1
-    PRINT processes[i].id + "\t" + processes[i].arrivalTime + "\t\t"
-        + processes[i].burstTime + "\t\t" + processes[i].startTime + "\t\t"
-        + processes[i].completionTime + "\t\t" + processes[i].waitingTime + "\t\t"
-        + processes[i].turnaroundTime
-
-PRINT "Average Turnaround Time: " + avgTurnaroundTime
-PRINT "Throughput: " + throughput
-
-END
-
-
-
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #include <iostream>
-#include <vector>
-#include <algorithm>
-
 using namespace std;
 
-struct Process {
-    int id;
-    int arrivalTime;
-    int burstTime;
-    int startTime;
-    int completionTime;
-    int waitingTime;
-    int turnaroundTime;
-};
-
-bool compareArrivalTime(const Process& p1, const Process& p2) {
-    return p1.arrivalTime < p2.arrivalTime;
+void swap(int *x, int *y)
+{
+    int var = *x;
+    *x = *y;
+    *y = var;
 }
 
-void calculateTimes(vector<Process>& processes) {
-    int n = processes.size();
-    int currentTime = 0;
-
-    sort(processes.begin(), processes.end(), compareArrivalTime);
-
-    for (int i = 0; i < n; i++) {
-        if (currentTime < processes[i].arrivalTime)
-            currentTime = processes[i].arrivalTime;
-
-        int shortestJobIndex = i;
-        for (int j = i + 1; j < n; j++) {
-            if (processes[j].arrivalTime <= currentTime && processes[j].burstTime < processes[shortestJobIndex].burstTime)
-                shortestJobIndex = j;
+void sortbyarrival(int noofprocess, int matrix[][6])
+{
+    for (int i = 0; i < noofprocess; i++)
+    {
+        for (int j = 0; j < noofprocess - i - 1; j++)
+        {
+            if (matrix[j][1] > matrix[j + 1][1])
+            {
+                for (int k = 0; k < 6; k++)
+                {
+                    swap(matrix[j][k], matrix[j + 1][k]);
+                }
+            }
         }
-
-        swap(processes[i], processes[shortestJobIndex]);
-
-        processes[i].startTime = currentTime;
-        processes[i].completionTime = currentTime + processes[i].burstTime;
-        processes[i].turnaroundTime = processes[i].completionTime - processes[i].arrivalTime;
-        processes[i].waitingTime = processes[i].turnaroundTime - processes[i].burstTime;
-
-        currentTime = processes[i].completionTime;
     }
 }
 
-void displayProcessTable(const vector<Process>& processes) {
-    cout << "ID\tArrival Time\tBurst Time\tStart Time\tCompletion Time\tWaiting Time\tTurnaround Time\n";
-    for (const auto& process : processes) {
-        cout << process.id << "\t" << process.arrivalTime << "\t\t"
-            << process.burstTime << "\t\t" << process.startTime << "\t\t"
-            << process.completionTime << "\t\t" << process.waitingTime << "\t\t"
-            << process.turnaroundTime << endl;
+void timeofcompletion(int noofprocess, int matrix[][6])
+{
+    int var, ctr;
+    matrix[0][3] = matrix[0][1] + matrix[0][2];
+    matrix[0][5] = matrix[0][3] - matrix[0][1];
+    matrix[0][4] = matrix[0][5] - matrix[0][2];
+    for (int i = 1; i < noofprocess; i++)
+    {
+        var = matrix[i - 1][3];
+        int lower = matrix[i][2];
+        for (int j = i; j < noofprocess; j++)
+        {
+            if (var >= matrix[j][1] && lower >= matrix[j][2])
+            {
+                lower = matrix[j][2];
+                ctr = j;
+            }
+        }
+        matrix[ctr][3] = var + matrix[ctr][2];
+        matrix[ctr][5] = matrix[ctr][3] - matrix[ctr][1];
+        matrix[ctr][4] = matrix[ctr][5] - matrix[ctr][2];
+        for (int k = 0; k < 6; k++)
+        {
+            swap(matrix[ctr][k], matrix[i][k]);
+        }
     }
 }
 
-double calculateAverageTurnaroundTime(const vector<Process>& processes) {
-    double sumTurnaroundTime = 0.0;
-    int n = processes.size();
-
-    for (const auto& process : processes) {
-        sumTurnaroundTime += process.turnaroundTime;
-    }
-
-    return sumTurnaroundTime / n;
-}
-
-double calculateThroughput(const vector<Process>& processes, int totalTime) {
-    int n = processes.size();
-    double throughput = static_cast<double>(n) / totalTime;
-
-    return throughput;
-}
-
-int main() {
-    int n;
+int main()
+{
+    int noofprocess;
     cout << "Enter the number of processes: ";
-    cin >> n;
+    cin >> noofprocess;
 
-    vector<Process> processes(n);
-    cout << "Enter the arrival time and burst time for each process:\n";
-    for (int i = 0; i < n; i++) {
-        processes[i].id = i + 1;
-        cout << "Process " << processes[i].id << " - Arrival time: ";
-        cin >> processes[i].arrivalTime;
-        cout << "Process " << processes[i].id << " - Burst time: ";
-        cin >> processes[i].burstTime;
+    int matrix[20][6];
+
+    cout << "Enter the Arrival Time and Burst Time for each process." << endl;
+    for (int i = 0; i < noofprocess; i++)
+    {
+        cout << "For Process " << (i + 1) << ":" << endl;
+        cout << "Arrival Time: ";
+        cin >> matrix[i][1];
+        cout << "Burst Time: ";
+        cin >> matrix[i][2];
+        matrix[i][0] = i + 1;
     }
 
-    calculateTimes(processes);
-    displayProcessTable(processes);
+    sortbyarrival(noofprocess, matrix);
+    timeofcompletion(noofprocess, matrix);
 
-    double avgTurnaroundTime = calculateAverageTurnaroundTime(processes);
-    cout << "Average Turnaround Time: " << avgTurnaroundTime << endl;
-int totalTime = processes[n - 1].completionTime - processes[0].arrivalTime;
-    double throughput = calculateThroughput(processes, totalTime);
-    cout << "Throughput: " << throughput << endl;
+    cout << "Process ID  Arrival Time  Burst Time  Waiting Time  Turnaround Time" << endl;
+    
+    int totalWaitingTime = 0;
+    int totalTurnaroundTime = 0;
+    
+    for (int i = 0; i < noofprocess; i++)
+    {
+        cout << matrix[i][0] << " " << matrix[i][1] << " " << matrix[i][2] << " " << matrix[i][4] << " " << matrix[i][5] << endl;
+        totalWaitingTime += matrix[i][4];
+        totalTurnaroundTime += matrix[i][5];
+    }
 
+    float averageWaitingTime = static_cast<float>(totalWaitingTime) / noofprocess;
+    float averageTurnaroundTime = static_cast<float>(totalTurnaroundTime) / noofprocess;
+    
+    cout << "\nAverage Waiting Time: " << averageWaitingTime << endl;
+    cout << "Average Turnaround Time: " << averageTurnaroundTime << endl;
+    
     return 0;
 }
